@@ -7,33 +7,30 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const pool = new Pool();
-
-pool.connect()
-  .then(() => console.log("Connected to PostgreSQL"))
-  .catch((err) => console.error("DB connection error", err));
-
-app.get("/", (req, res) => {
-  res.send("Server is running and connected to PostgreSQL!");
+// ✅ Use proper config for PostgreSQL on Render
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // required for Render-hosted DB
+  },
 });
 
-const authRoutes = require("./routes/authRoutes");
-const scoreRoutes = require("./routes/scoreRoutes");
+// DB connection test
+pool.connect()
+  .then(() => console.log("✅ Connected to PostgreSQL"))
+  .catch((err) => console.error("❌ DB connection error", err));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/score", scoreRoutes);
+app.get("/", (req, res) => {
+  res.send("🚀 Server is running and connected to PostgreSQL!");
+});
+
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/score", require("./routes/scoreRoutes"));
+app.use("/api/mentor", require("./routes/mentorRoutes"));
+app.use("/api/participant", require("./routes/participantRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/leaderboard", require("./routes/leaderboardRoutes"));
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-const mentorRoutes = require("./routes/mentorRoutes");
-app.use("/api/mentor", mentorRoutes);
-
-const participantRoutes = require("./routes/participantRoutes");
-app.use("/api/participant", participantRoutes);
-
-const adminRoutes = require("./routes/adminRoutes");
-app.use("/api/admin", adminRoutes);
-
-const leaderboardRoutes = require("./routes/leaderboardRoutes");
-app.use("/api/leaderboard", leaderboardRoutes);
+app.listen(PORT, () => console.log(`🌐 Server running on port ${PORT}`));
