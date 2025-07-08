@@ -1,0 +1,79 @@
+/* === PARTICIPANT DASHBOARD STYLES === */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #e4ecf1);
+  color: #333;
+}
+
+.dashboard-container {
+  padding: 60px 20px;
+  max-width: 1000px;
+  margin: auto;
+  text-align: center;
+}
+
+.dashboard-header {
+  font-size: 2rem;
+  color: #1976d2;
+  margin-bottom: 30px;
+  text-shadow: 0 0 10px rgba(25, 118, 210, 0.3);
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  padding: 25px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.card h5 {
+  color: #0d47a1;
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+}
+
+.card p, .card ul li {
+  color: #444;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.search-input {
+  padding: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 25px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 40px 15px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    font-size: 1.6rem;
+  }
+}
