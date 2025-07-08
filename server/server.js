@@ -7,24 +7,81 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Use proper config for PostgreSQL on Render
+// ✅ Connect to PostgreSQL on Render
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // required for Render-hosted DB
-  },
+  ssl: { rejectUnauthorized: false },
 });
 
-// DB connection test
+// ✅ Direct SQL to create tables
+const initDB = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role VARCHAR(50) NOT NULL
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS scores (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        mentor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        challenge1_score INTEGER DEFAULT 0,
+        challenge2_score INTEGER DEFAULT 0,
+        challenge3_score INTEGER DEFAULT 0,
+        challenge4_score INTEGER DEFAULT 0,
+        consistency_score INTEGER DEFAULT 0,
+        communication_score INTEGER DEFAULT 0,
+        final_project_score INTEGER DEFAULT 0,
+        total_score INTEGER GENERATED ALWAYS AS (
+          challenge1_score +
+          challenge2_score +
+          challenge3_score +
+          challenge4_score +
+          consistency_score +
+          communication_score +
+          final_project_score
+        ) STORED
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS score_change_logs (
+        id SERIAL PRIMARY KEY,
+        participant_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        component VARCHAR(100) NOT NULL,
+        old_value INTEGER,
+        new_value INTEGER,
+        updated_by VARCHAR(255) NOT NULL,
+        feedback TEXT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    console.log("✅ All tables created or already exist.");
+  } catch (err) {
+    console.error("❌ Table creation error:", err);
+  }
+};
+
+// ✅ Initialize DB on server start
 pool.connect()
-  .then(() => console.log("✅ Connected to PostgreSQL"))
+  .then(async () => {
+    console.log("✅ Connected to PostgreSQL");
+    await initDB();
+  })
   .catch((err) => console.error("❌ DB connection error", err));
 
+// === ROUTES ===
 app.get("/", (req, res) => {
   res.send("🚀 Server is running and connected to PostgreSQL!");
 });
 
-// Routes
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/score", require("./routes/scoreRoutes"));
 app.use("/api/mentor", require("./routes/mentorRoutes"));
@@ -32,5 +89,6 @@ app.use("/api/participant", require("./routes/participantRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/leaderboard", require("./routes/leaderboardRoutes"));
 
+// === START SERVER ===
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🌐 Server running on port ${PORT}`));
