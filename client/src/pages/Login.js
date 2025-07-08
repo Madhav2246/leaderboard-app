@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api"; // ✅ Uses the configured API with base URL
+
 import "../assets/style.css";
 import logo from "../assets/images/acm-logo.jpg";
 import Toast from "../components/Toast";
@@ -22,7 +23,7 @@ export default function Login() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/auth/login", form);
+      const res = await api.post("/api/auth/login", form); // ✅ Uses API proxy
       const user = res.data.user;
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(user));

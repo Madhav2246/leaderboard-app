@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api"; // ✅ use your axios instance
+
 import "../assets/style.css";
 import logo from "../assets/images/acm-logo.jpg";
 import Toast from "../components/Toast";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [error, setError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
@@ -28,7 +34,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await api.post("/api/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,
@@ -38,7 +44,7 @@ export default function Register() {
       setTimeout(() => navigate("/"), 2000);
     } catch (err) {
       setToastType("error");
-      setToastMessage("Registration failed. Email may already exist.");
+      setToastMessage("❌ Registration failed. Email may already exist.");
     } finally {
       setLoading(false);
     }

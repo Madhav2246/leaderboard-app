@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../api"; // ✅ use api instance
 import "../assets/style.css";
 import logo from "../assets/images/acm-logo.jpg";
 import Toast from "../components/Toast";
@@ -16,7 +16,7 @@ export default function ForgotPassword() {
 
     try {
       setLoading(true);
-      await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
+      await api.post("/api/auth/forgot-password", { email }); // ✅ updated
       setToast({ message: "📧 Reset link sent to your email!", type: "success" });
       setStatus({ message: "Check your inbox to reset your password.", type: "success" });
       setEmail("");
@@ -31,7 +31,11 @@ export default function ForgotPassword() {
   return (
     <div className="auth-container">
       {toast.message && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: "", type: "" })} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: "", type: "" })}
+        />
       )}
 
       <div className="auth-card">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api"; // ✅ use centralized API
 import "../assets/style.css";
 import logo from "../assets/images/acm-logo.jpg";
 import Toast from "../components/Toast";
@@ -25,8 +25,7 @@ export default function ResetPassword() {
 
     try {
       setLoading(true);
-      await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
-
+      await api.post(`/api/auth/reset-password/${token}`, { password }); // ✅ updated
       setToast({ message: "✅ Password reset successful! Redirecting...", type: "success" });
       setStatus({ message: "", type: "" });
 
@@ -41,7 +40,11 @@ export default function ResetPassword() {
   return (
     <div className="auth-container">
       {toast.message && (
-        <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: "", type: "" })} />
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ message: "", type: "" })}
+        />
       )}
 
       <div className="auth-card">
