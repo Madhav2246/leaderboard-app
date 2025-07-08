@@ -1,0 +1,16 @@
+# node_modules (both backend and frontend)
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# build artifacts
+client/build/
+
+# .env files
+.env
+client/.env
+server/.env
+
+# logs and caches
+*.log
+.DS_Store
